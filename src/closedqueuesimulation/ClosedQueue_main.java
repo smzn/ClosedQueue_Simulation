@@ -17,13 +17,14 @@ public class ClosedQueue_main {
 		double [][]d = new double[K][K];
 		double p[] = new double[K];
 		double mu[] = new double[K];
+		int node_index[] = new int[K];
 		
 		//CSVから取り込み
 		try {
 		      File f = new File("csv/distance.csv");
 		      BufferedReader br = new BufferedReader(new FileReader(f));
 		 
-		      String[][] data = new String[K][K+2];
+		      String[][] data = new String[K][K+3];
 		      String line = br.readLine();
 		      for (int row = 0; line != null; row++) {
 		        data[row] = line.split(",", 0);
@@ -34,11 +35,12 @@ public class ClosedQueue_main {
 		      // CSVから読み込んだ配列の中身を表示
 		      for(int row = 0; row < data.length; row++) {
 		        for(int col = 0; col < data[0].length; col++) {
-		        		if( col < data[0].length -2 ) {
+		        		if( col < data[0].length -3 ) {
 		        			d[row][col] = Double.parseDouble(data[row][col]);
 		        		}
-		        		else if (col == data[0].length -2) p[row] = Double.parseDouble(data[row][col]);
-		        		else if (col == data[0].length -1) mu[row] = Double.parseDouble(data[row][col]);
+		        		else if (col == data[0].length -3) p[row] = Double.parseDouble(data[row][col]);
+		        		else if (col == data[0].length -2) mu[row] = Double.parseDouble(data[row][col]);
+		        		else if (col == data[0].length -1) node_index[row] = Integer.parseInt(data[row][col]);
 		        }
 		      } 
 
@@ -125,6 +127,7 @@ public class ClosedQueue_main {
 		
 		//理論値
 		System.out.println("重力モデルパラメタ" +Arrays.deepToString(d));
+		System.out.println("利用ノードID" +Arrays.toString(node_index));
 		System.out.println("人気度" +Arrays.toString(p));
 		System.out.println("サービス率" +Arrays.toString(mu));
 		System.out.println("推移確率行列" +Arrays.deepToString(f));
