@@ -137,12 +137,24 @@ public class ClosedQueue_main {
 		System.out.println("理論値 : スループット = " +Arrays.toString(lambda));
 		
 		//Simulation
-		ClosedQueue_simulation qsim = new ClosedQueue_simulation(f, 100000, f.length, N, mu, d, 4000);
-		System.out.println("Simulation : (平均系内人数, 平均待ち人数) = "+Arrays.deepToString(qsim.getSimulation()));
-		System.out.println("Simulation : (系内時間,系内時間分散,最大待ち人数) = "+Arrays.deepToString(qsim.getEvaluation()));
+		ClosedQueue_simulation qsim = new ClosedQueue_simulation(f, 100000, f.length, N, mu, d, 4000, node_index);
+		double simulation[][] = qsim.getSimulation();
+		double evaluation[][] = qsim.getEvaluation();
+		double result[][] = new double[K][5];
+		for(int i = 0; i < result.length; i++) {
+			for(int j = 0; j < result[0].length; j++) {
+				if(j < 2 ) result[i][j] = simulation[j][i];
+				else if (j >= 2) result[i][j] = evaluation[j-2][i];
+			}
+		}
+		System.out.println("Simulation : (平均系内人数, 平均待ち人数) = "+Arrays.deepToString(simulation));
+		System.out.println("Simulation : (系内時間,系内時間分散,最大待ち人数) = "+Arrays.deepToString(evaluation));
+		System.out.println("Simulation : (平均系内人数, 平均待ち人数,系内時間,系内時間分散,最大待ち人数) = "+Arrays.deepToString(result));
 		System.out.println("Simulation : (時間割合) = "+Arrays.deepToString(qsim.getTimerate()));
 		System.out.println("Simulation : (同時時間割合) = "+Arrays.deepToString(qsim.getTimerate2()));
 		System.out.println("Simulation : (相関係数行列) = "+Arrays.deepToString(qsim.getCorrelation()));
+		qsim.getMySQL(result);
+		System.out.println("Simulation : (MySQL : 実行完了)");
 	}
 
 }

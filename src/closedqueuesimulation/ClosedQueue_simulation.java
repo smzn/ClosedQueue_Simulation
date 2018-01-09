@@ -3,13 +3,12 @@ package closedqueuesimulation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 public class ClosedQueue_simulation {
 	
 	private double p[][], mu[]; //推移確率行列(今回は重力モデルから)
-	private int time;
+	private int time, node_index[];;
 	Random rnd = new Random();
 	private int k; //ノード数
 	private int n; //系内の客数
@@ -18,16 +17,18 @@ public class ClosedQueue_simulation {
 	ArrayList<Integer> queuelength[];
 	private double timerate[][];
 	private double timerate2[][];
+	private double correlation[][];
 	ArrayList<Integer> timequeue[];
 	private double d[][];
 	private double speed;
 	
-	public ClosedQueue_simulation(double[][] p, int time, int k, int n, double[] mu, double [][]d, double speed) {
+	public ClosedQueue_simulation(double[][] p, int time, int k, int n, double[] mu, double [][]d, double speed, int[] node_index) {
 		this.p = p;
 		this.time = time;
 		this.k = k;
 		this.n = n;
 		this.mu = mu;
+		this.node_index = node_index;
 		eventtime = new ArrayList[k];
 		event = new ArrayList[k];
 		queuelength = new ArrayList[k];
@@ -37,9 +38,10 @@ public class ClosedQueue_simulation {
 		for(int i = 0; i < queuelength.length; i++) queuelength[i] = new ArrayList<Integer>();
 		for(int i = 0; i < timequeue.length; i++) timequeue[i] = new ArrayList<Integer>();
 		timerate = new double[k][n+1]; //0人の場合も入る
-		timerate2 = new double[n][k+1];
+		timerate2 = new double[n+1][k+1]; //0人からn人のn+1, 0拠点からk拠点でのk+1拠点
 		this.d = d;
 		this.speed = speed;
+		correlation = new double[k][k];
 	}
 	
 	public double[][] getSimulation() {
@@ -98,7 +100,7 @@ public class ClosedQueue_simulation {
 			}//dummyノード処理ここまで
 			
 			//各ノードでの人数割合(同時滞在人数) 
-			for(int i = 0; i < n; i++) {
+			for(int i = 0; i < n+1; i++) {
 				int totalnumber = 0;
 				for(int j = 0; j < queue.length; j++) {
 					if(queue[j] == i) totalnumber ++;
@@ -237,7 +239,6 @@ public class ClosedQueue_simulation {
 				}
 			}
 			//相関係数行列作成
-			double correlation[][] = new double[k][k];
 			for(int i = 0; i < k; i++) {
 				for(int j = 0; j < k; j++) {
 					correlation[i][j] = new PearsonsCorrelation().correlation(elapsequeue[i], elapsequeue[j]);
@@ -246,5 +247,14 @@ public class ClosedQueue_simulation {
 			return correlation;
 		}
 	
+		public void getMySQL(double result[][]) {
+			MySQL mysql = new MySQL(node_index);
+			mysql.insertSimulation(168,node_index.length,time,2);//setting_id,facility_num,time,way_id
+			mysql.insertQueue(result);
+			mysql.insertCorrelation(correlation);
+			mysql.insertTimerate(timerate2);
+			mysql.insertEventtime(eventtime);
+			mysql.insertTimequeue(timequeue);	
+		}
 }
 
