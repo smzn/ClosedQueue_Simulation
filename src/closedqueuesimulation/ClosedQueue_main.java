@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-
 public class ClosedQueue_main {
 
 	public static void main(String[] args) {
@@ -153,8 +152,12 @@ public class ClosedQueue_main {
 		System.out.println("Simulation : (時間割合) = "+Arrays.deepToString(qsim.getTimerate()));
 		System.out.println("Simulation : (同時時間割合) = "+Arrays.deepToString(qsim.getTimerate2()));
 		System.out.println("Simulation : (相関係数行列) = "+Arrays.deepToString(qsim.getCorrelation()));
-		qsim.getMySQL(result);
+		//qsim.getMySQL(result);
 		System.out.println("Simulation : (MySQL : 実行完了)");
+		
+		Graph graph = new Graph(qsim, node_index);
+		graph.setBounds(5,5,755,455);
+		graph.setVisible(true);
 	}
 
 }

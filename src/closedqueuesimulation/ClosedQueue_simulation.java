@@ -256,5 +256,9 @@ public class ClosedQueue_simulation {
 			mysql.insertEventtime(eventtime);
 			mysql.insertTimequeue(timequeue);	
 		}
+		
+		public ArrayList<Integer>[] getTimequeue() {
+			return timequeue;
+		}
 }
 
